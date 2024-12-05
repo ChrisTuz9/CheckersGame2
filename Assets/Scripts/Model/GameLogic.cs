@@ -46,7 +46,6 @@ public class GameLogic
         int toRow = (int)newPosition.y;
         int vectorX = toCol - fromCol;
         int vectorY = toRow - fromRow;
-        Debug.Log($"{vectorX} {vectorY}");
         return selectedPiece.HasValidCaptureBeforeTile(vectorX, vectorY);
     }
 

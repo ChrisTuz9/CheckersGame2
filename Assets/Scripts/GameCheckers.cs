@@ -31,28 +31,35 @@ public class GameCheckers : MonoBehaviour
 
     public void StartNewGame()
     {
-        PieceColor selectedColor = (PieceColor)PlayerPrefs.GetInt("SelectedColor", (int)PieceColor.WHITE);
-
-        if (board != null)
+        try
         {
-            moves.Clear();
-            moveLogger.ClearMoveLog();
-            board.DestroyBoard();
-            Destroy(board);
+            PieceColor selectedColor = (PieceColor)PlayerPrefs.GetInt("SelectedColor", (int)PieceColor.WHITE);
+
+            if (board != null)
+            {
+                moves.Clear();
+                moveLogger.ClearMoveLog();
+                board.DestroyBoard();
+                Destroy(board);
+            }
+
+            board = gameObject.AddComponent<Board>();
+            board.SetTilesPreFabs(whiteTilePreFabs, blackTilePreFabs);
+            board.SetPiecesPreFabs(whitePiecePreFabs, blackPiecePreFabs, whiteKingPreFabs, blackKingPreFabs);
+            board.CreateBoard(selectedColor);
+
+            moveLogger = gameObject.AddComponent<MoveLogger>();
+            moveLogger.SetMoveLogger(moveLogContent, moveLogEntryPrefab);
+
+            gameController = new GameController(board, moveLogger, moves);
+
+            gameController.OnGameOver += HandleGameOver;
+            gameOverPanel.SetActive(false);
         }
-
-        board = gameObject.AddComponent<Board>();
-        board.SetTilesPreFabs(whiteTilePreFabs, blackTilePreFabs);
-        board.SetPiecesPreFabs(whitePiecePreFabs, blackPiecePreFabs, whiteKingPreFabs, blackKingPreFabs);
-        board.CreateBoard(selectedColor);
-
-        moveLogger = gameObject.AddComponent<MoveLogger>();
-        moveLogger.SetMoveLogger(moveLogContent, moveLogEntryPrefab);
-
-        gameController = new GameController(board, moveLogger, moves);
-
-        gameController.OnGameOver += HandleGameOver;
-        gameOverPanel.SetActive(false);
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"Error starting new game: {ex.Message}");
+        }
     }
 
     void Update()
@@ -65,7 +72,15 @@ public class GameCheckers : MonoBehaviour
             if (hit.collider != null)
             {
                 GameObject clickedObject = hit.collider.gameObject;
-                gameController.MakeAction(clickedObject);
+                try
+                {
+                    gameController.MakeAction(clickedObject);
+                }
+                catch (System.NullReferenceException ex)
+                {
+                    Debug.LogError($"Error during Update: {ex.Message}");
+                }
+               
             }
         }
     }
@@ -74,6 +89,6 @@ public class GameCheckers : MonoBehaviour
     {
         gameOverPanel.SetActive(true);
         gameOverText.text = message;
-        gameController.OnGameOver -= HandleGameOver;
+
     }
 }

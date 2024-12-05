@@ -120,7 +120,7 @@ public class Board : MonoBehaviour, IEnumerable<IMovable>
 
     public void DestroyBoard()
     {
-        foreach (IMovable piece in this)
+        foreach (IMovable piece in pieces.ToList())
         {
             if (piece != null)
             {

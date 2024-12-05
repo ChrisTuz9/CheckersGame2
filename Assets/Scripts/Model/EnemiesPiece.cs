@@ -78,7 +78,6 @@ public class EnemiesPiece : IMovable
             {
                 return true;
             }
-
         }
 
         return false;

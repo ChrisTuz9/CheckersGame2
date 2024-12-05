@@ -75,10 +75,7 @@ public class PlayersPiece : IMovable
 
 			List<IMovable> piecesBetweenPositions = board.GetPiecesBetweenPositions(new Vector2(X, Y), new Vector2(checkCol, checkRow));
             if (piecesBetweenPositions.Count == 1 && piecesBetweenPositions.FirstOrDefault()?.Color != Color)
-			{
 				return true;
-			}
-				
         }
 
 		return false;
